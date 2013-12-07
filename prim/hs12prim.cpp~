@@ -1,0 +1,114 @@
+#define MAXPRIME 1000
+#define NPRIMES 3001134
+
+#include <iostream>
+#include <stdlib.h>
+#include <string>
+#include <string.h>
+
+#define abs(val) ((val) < 0 ? -(val) : (val))
+
+using namespace std;
+
+unsigned char classes[MAXPRIME];
+bool isprime[MAXPRIME];
+unsigned int primes[NPRIMES];
+unsigned int topfactors[MAXPRIME];
+unsigned int subs[MAXPRIME];
+
+inline int gcd(unsigned int a,unsigned int b){
+  return b ? gcd(b,(a%b)):a;
+}
+
+inline unsigned int rho(unsigned int n) {
+  if(topfactors[n]!=0) return topfactors[n];
+  unsigned int divisor;
+  unsigned int c = rand() % n;
+  unsigned int x = rand() % n;
+  unsigned int y = x;
+  do{
+    x = (((x*x) % n) + c) % n;
+    y = (((y*y) % n) + c) % n;
+    y = (((y*y) % n) + c) % n;
+    divisor = gcd(abs(x-y), n);
+  } while(1 == divisor);
+  topfactors[n] = divisor;
+  return divisor;
+}
+
+inline unsigned int sub(unsigned int n){
+  if(n==0) n=1;
+  while(!(n%2)) n/=2;
+  while(!(n%3)) n/=3;
+  unsigned int f,p = 1;
+  if(n==1) return 0;
+  while(n!=1){
+    f = rho(n);
+    p *= f-1;
+    while(!(n%f)) n/=f;
+  }
+  return p;
+}
+  
+  
+int main(){
+  memset(&topfactors, 0x00000000, 4*MAXPRIME);
+  memset(&isprime, 1, 1*MAXPRIME);
+  memset(&classes, 0x00000000, 1*MAXPRIME);
+  memset(&subs, 0x00000000, 4*MAXPRIME);
+  isprime[2] = true;
+  isprime[3] = true;
+  for(unsigned int i = 4; i <= MAXPRIME; i += 2){
+    
+    classes[i+1] = 1;
+    isprime[i] = false;
+  }
+  for(unsigned int i = 9; i <= MAXPRIME; i += 6){
+    classes[i+1] = 1;
+    isprime[i] = false;
+  }
+  unsigned int pi = 2;
+  classes[1] = 1;
+  classes[2] = 0;
+  classes[3] = 0;
+  classes[4] = 1;
+  primes[0] = 2;
+  primes[1] = 3;
+  unsigned int rc, r, rh;
+  for(unsigned int i = 5; i <= MAXPRIME; i+=2){
+    if(isprime[i]){
+      cout << i << " is prime\n";
+      r = (i-1)/2;
+      while(!(r%2)) r/=2;
+      while(!(r%3)) r/=3;
+      if(r == 1){
+	classes[i] = 1;
+      }
+      else{
+	while(!isprime[r]){
+	  cout << r <<'\n';
+	  r/=rho(r);
+	}
+	classes[i] = classes[r]+1;
+      }
+      cout << "Highest factor of " << (i-1) << " is " << r << " which is class " << (int)classes[r] << '\n';
+      cout << "so " << i << " is class " << (int)classes[i] << '\n';
+      for(unsigned int j = 2*i; j <= MAXPRIME; j += i){
+	classes[j+1] = classes[i];
+	isprime[j] = false;
+      }
+      primes[pi++] = i;
+    }
+  }
+  pi = 0; 
+  unsigned int bins[14];
+  memset(&bins, 0x00, 14*4);
+  while(primes[pi]<2) pi++;
+  while(primes[pi]<100){
+    cout << primes[pi] << " is class " << (int)classes[primes[pi]] <<'\n';
+    bins[classes[pi]]++;
+    pi++;
+  }
+  for(int i=1;i<14;i++) cout << "There are " << bins[i] << " primes in class " << i <<'\n';
+  return 0;
+}

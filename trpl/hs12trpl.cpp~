@@ -1,0 +1,32 @@
+#define MAXPRIME 50000000
+#define MAXNPRIMES 3001134
+
+#include <iostream>
+#include <string.h>
+#include <stdio.h>
+#include <sstream>
+#include <algorithm>
+#include <stdlib.h>
+
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+using namespace std;
+
+unsigned int ntests,n,m;
+string* names;
+unsigned int* w;
+
+int main(){
+  getline(cin,line);
+  stringstream(line) >> n;
+  names = (string*) malloc(sizeof(string)*n);
+  w = (unsigned int*) malloc(4*n);
+  for(int i=0;i<n;i++){
+    names[i] = string();
+    getline(cin,line);
+    stringstream(line) >> names[i] >> w[i];
+    cout << names[i] << ", W = " << w[i] << '\n';
+  }
+  
+  return 0;
+}
